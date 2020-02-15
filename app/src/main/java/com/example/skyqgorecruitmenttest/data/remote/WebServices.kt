@@ -7,5 +7,5 @@ import retrofit2.http.GET
 interface WebServices {
 
     @GET("movies")
-    fun fetchRepoWebService(): Single<MovieRepo>
+    fun fetchMovieWebService(): Single<MovieRepo>
 }

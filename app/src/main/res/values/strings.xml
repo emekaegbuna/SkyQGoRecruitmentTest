@@ -7,5 +7,6 @@
     <string name="apply">Apply</string>
     <string name="search_movies">Search Movies</string>
     <string name="total_repo_count">Total %1$d hits in %2$s</string>
+    <string name="refresh">Refresh</string>
 
 </resources>

@@ -44,7 +44,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etSearch"
-        tools:text="Display results and time!" />
+        tools:text="Display Filter" />
 
 
     <androidx.recyclerview.widget.RecyclerView

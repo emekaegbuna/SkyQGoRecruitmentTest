@@ -1,6 +1,7 @@
 package com.example.skyqgorecruitmenttest.viewModel
 
 import android.app.Activity
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.skyqgorecruitmenttest.data.model.Data
@@ -8,6 +9,7 @@ import com.example.skyqgorecruitmenttest.data.repository.Repository
 import com.example.skyqgorecruitmenttest.ui.activity.MainActivity
 import io.reactivex.disposables.CompositeDisposable
 import java.net.UnknownHostException
+import java.time.Duration
 import java.util.*
 import javax.inject.Inject
 
@@ -15,13 +17,13 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val repository: Repository): ViewModel() {
 
     private val disposable = CompositeDisposable()
+    var fetchTime: MutableLiveData<Duration> = MutableLiveData()
+
     var lastFetchedTime: Date? = null
 
     val repos: MutableLiveData<List<Data>> = MutableLiveData()
-    val totalCount: MutableLiveData<Int> = MutableLiveData()
-
+    val genre: MutableLiveData<List<String>> = MutableLiveData()
     val errorMessage: MutableLiveData<String> = MutableLiveData()
-    val toastMessage: MutableLiveData<String> = MutableLiveData()
 
     val loadingState = MutableLiveData<LoadingState>()
 
@@ -40,58 +42,90 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
         return MainActivity::class.java
     }
 
-    fun fetchMovieRepos(query: String?, filter: String?, clearOldItem: Boolean){
+    fun fetchGenre(movies: List<Data>){
 
-        if (clearOldItem) {
-            loadingState.value = LoadingState.LOADING
+
+
+        val newGenreList: MutableList<String> = mutableListOf()
+
+        for (movie in movies){
+            if (newGenreList.contains(movie.genre)){
+                Log.d("GENRE TAG", "genre already exists")
+            }else{
+                newGenreList.add(movie.genre)
+                Log.d("GENRE TAG", newGenreList.toString())
+                genre.value = newGenreList
+            }
         }
+    }
+
+    fun fetchMovieRepos(query: String?, filter: String?){
+
+
+        loadingState.value = LoadingState.LOADING
+
         disposable.add(
             repository.fetchMovieRepos()
                 .subscribe({
                     lastFetchedTime = Date()
-                    if (it.data.isEmpty()) {
-                        if (clearOldItem) {
-                            errorMessage.value = "No Movies Found"
-                            loadingState.value = LoadingState.ERROR
-                        } else {
-                            toastMessage.value = "No more data found"
-                        }
+                    if (it.data!!.isEmpty()) {
+                        errorMessage.value = "No Movies Found"
+                        loadingState.value = LoadingState.ERROR
+
                     } else {
 
-                        repos.value = it.data
-                        /*if (query!!.isNotEmpty()){
-                            when(filter){
-                                "title" -> {
-                                    it.data.filter {
-                                        myFilterFunc(it)
-                                    }
-                                }
-                                "genre" -> {
+                        fetchGenre(it.data)
 
+                        var newMovieList: MutableList<Data> = mutableListOf()
+
+                        if (query != null && query.isNotEmpty() && filter!!.isNotEmpty()){
+                            for (movie in it.data){
+                                if (movie.title.contains(query, true) && movie.genre.equals(filter)){
+                                    newMovieList.add(movie)
                                 }
                             }
-                        }*/
+                            repos.value = newMovieList
+
+                        }else if (query != null && query.isNotEmpty()){
+                            for (movie in it.data){
+                                if (movie.title.contains(query, true)){
+                                    newMovieList.add(movie)
+                                }
+                            }
+
+                            repos.value = newMovieList
+
+                        }else if (filter!!.isNotEmpty()){
+                            for (movie in it.data){
+                                if (movie.genre.equals(filter)){
+                                    newMovieList.add(movie)
+                                }
+                            }
+
+                            repos.value = newMovieList
+
+                        }else{
+                            repos.value = it.data
+                        }
+
                         //totalCount.value = it.data.size
                         loadingState.value = LoadingState.SUCCESS
+
+
                     }
                 }, {
                     lastFetchedTime = Date()
 
                     it.printStackTrace()
 
-                    if (clearOldItem) {
-                        when (it) {
-                            is UnknownHostException -> errorMessage.value = "No Network"
-                            else -> errorMessage.value = it.localizedMessage
-                        }
 
-                        loadingState.value = LoadingState.ERROR
-                    } else {
-                        when (it) {
-                            is UnknownHostException -> toastMessage.value = "No Network"
-                            else -> toastMessage.value = it.localizedMessage
-                        }
+                    when (it) {
+                        is UnknownHostException -> errorMessage.value = "No Network"
+                        else -> errorMessage.value = it.localizedMessage
                     }
+
+                    loadingState.value = LoadingState.ERROR
+
                 })
         )
     }

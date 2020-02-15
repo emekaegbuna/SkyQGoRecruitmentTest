@@ -5,6 +5,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.skyqgorecruitmenttest.MyTextWatcher
 import com.example.skyqgorecruitmenttest.R
+import com.example.skyqgorecruitmenttest.data.model.Data
 import com.example.skyqgorecruitmenttest.di.DaggerActivityComponent
 import com.example.skyqgorecruitmenttest.di.NetworkModule
 import com.example.skyqgorecruitmenttest.di.RepositoryModule
@@ -30,40 +33,20 @@ class MainActivity : AppCompatActivity() {
     lateinit var mainViewModelFactory: MainViewModelFactory
     private lateinit var viewModel: MainViewModel
     private lateinit var movieAdapter: MovieAdapter
-
-    var filter: String = ""
-
-    val RC_FILTER = 1001
-
     var apiStartTime: Long = System.currentTimeMillis()
+    var movieGenre: String = ""
+    var query: String = ""
 
-    var isLoadingMoreData = false
+    val filterRequestCode = 1001
 
-    var clearOldItems = true
 
-    var PER_PAGE_ITEM = 30
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        movieAdapter = MovieAdapter(mutableListOf())
-        val layoutManager = GridLayoutManager(this, 3)
-        rvRepos.layoutManager = layoutManager
-        rvRepos.adapter = movieAdapter
-        rvRepos.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (!isLoadingMoreData) {
-                    val visibleItemCount = layoutManager.childCount
-                    val totalItemsCount = layoutManager.itemCount
-                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
 
-                    if (pastVisibleItems + visibleItemCount >= totalItemsCount) {
-                        fetchMoreData(totalItemsCount)
-                    }
-                }
-
-            }
-        })
+        // dependency injection
         DaggerActivityComponent.builder()
             .networkModule(NetworkModule())
             .repositoryModule(RepositoryModule())
@@ -72,26 +55,14 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this, mainViewModelFactory).get(MainViewModel::class.java)
 
+
         viewModel.repos.observe(this, Observer {
-            isLoadingMoreData = false
-            movieAdapter.updateItems(it, clearOldItems)
-        })
-
-        viewModel.totalCount.observe(this, Observer {
-
-            val currentTime = System.currentTimeMillis()
-            val elapsedTime = currentTime - apiStartTime
-            tvDisplay.text = getString(R.string.total_repo_count, it, elapsedTime.toTimeDuration())
+            setupRecycleView(it)
         })
 
         viewModel.errorMessage.observe(this, Observer {
-            isLoadingMoreData = false
-            tvErrorMessage.text = it
-        })
 
-        viewModel.toastMessage.observe(this, Observer {
-            isLoadingMoreData = false
-            Toast.makeText(this,it,Toast.LENGTH_SHORT).show()
+            tvErrorMessage.text = it
         })
 
         viewModel.loadingState.observe(this, Observer {
@@ -112,31 +83,35 @@ class MainActivity : AppCompatActivity() {
         etSearch.addTextChangedListener(object : MyTextWatcher() {
             override fun afterTextChanged(s: Editable?) {
                 super.afterTextChanged(s)
-                clearOldItems = true
-                fetchRepos(s.toString(), filter)
+                fetchRepos(s.toString(), movieGenre)
             }
         })
 
         tvFilter.setOnClickListener {
             val intent = Intent(this, FilterActivity::class.java)
-            intent.putExtra("selected_language", filter)
-            startActivityForResult(intent, RC_FILTER)
+            intent.putExtra("selected_genre", movieGenre)
+            startActivityForResult(intent, filterRequestCode)
         }
     }
 
-    private fun fetchMoreData(totalItemCount: Int) {
-        isLoadingMoreData = true
+    private fun setupRecycleView(movies: List<Data>){
+        movieAdapter = MovieAdapter(movies.toMutableList())
+        val layoutManager = GridLayoutManager(this, 3)
+        rvRepos.layoutManager = layoutManager
+        rvRepos.adapter = movieAdapter
+    }
+
+    private fun reloadData(totalItemCount: Int) {
         Toast.makeText(
             this@MainActivity,
-            "Reached end of recyclerview with no of items: $totalItemCount",
+            "Reloaded new Movies",
             Toast.LENGTH_SHORT
         ).show()
-        clearOldItems = false
 
         if (etSearch.text.toString() == "") {
-            fetchRepos("org:github", filter,(totalItemCount / PER_PAGE_ITEM) + 1)
+            fetchRepos("", movieGenre)
         } else {
-            fetchRepos(etSearch.text.toString(), filter,(totalItemCount / PER_PAGE_ITEM) + 1)
+            fetchRepos(etSearch.text.toString(), movieGenre)
         }
     }
 
@@ -166,14 +141,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            RC_FILTER -> {
+             filterRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    filter = data?.getStringExtra("selected_language") ?: ""
-                    clearOldItems = true
+                    movieGenre = data?.getStringExtra("selected_genre") ?: ""
                     if (etSearch.text.toString() == "") {
-                        fetchRepos(language = filter)
+                        fetchRepos(movieGenre = movieGenre)
                     } else {
-                        fetchRepos(etSearch.text.toString(), filter)
+                        fetchRepos(etSearch.text.toString(), movieGenre)
                     }
                 }
             }
@@ -183,8 +157,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun fetchRepos(query: String = "org:github", language: String = "", pageNo: Int = 1) {
+    fun fetchRepos(query: String = "", movieGenre: String = "") {
         apiStartTime = System.currentTimeMillis()
-        viewModel.fetchMovieRepos(query, language, clearOldItems)
+        viewModel.fetchMovieRepos(query, movieGenre)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.activity_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_refresh -> {
+                viewModel.fetchMovieRepos(query, movieGenre)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+
+        }
+
     }
 }

@@ -17,5 +17,5 @@ For support, please feel free to contact me at https://www.linkedin.com/in/syeda
 
 data class MovieRepo (
 
-    @SerializedName("data") val data : List<Data>
+    @SerializedName("data") val data : List<Data>?
 )

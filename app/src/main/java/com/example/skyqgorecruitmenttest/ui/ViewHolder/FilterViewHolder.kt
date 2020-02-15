@@ -6,6 +6,8 @@ import kotlinx.android.synthetic.main.view_holder_filter.view.*
 
 class FilterViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
+
+
     fun bind(
         language: String,
         selectedLanguage: String,

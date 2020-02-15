@@ -1,5 +1,6 @@
 package com.example.skyqgorecruitmenttest.di
 
+import com.example.skyqgorecruitmenttest.ui.activity.FilterActivity
 import com.example.skyqgorecruitmenttest.ui.activity.MainActivity
 import dagger.Component
 import javax.inject.Singleton
@@ -10,4 +11,6 @@ import javax.inject.Singleton
 interface ActivityComponent {
 
     fun inject(mainActivity: MainActivity)
+    fun inject(filterActivity: FilterActivity)
+
 }

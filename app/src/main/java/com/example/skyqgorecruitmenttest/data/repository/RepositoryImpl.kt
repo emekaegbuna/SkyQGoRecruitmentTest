@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 open class RepositoryImpl @Inject constructor(private val webServices: WebServices) : Repository {
     override fun fetchMovieRepos(): Single<MovieRepo> {
-        return webServices.fetchRepoWebService()
+        return webServices.fetchMovieWebService()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

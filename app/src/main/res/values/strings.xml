@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">SkyQGoRecruitmentTest</string>
+    <string name="retry">Retry</string>
+    <string name="my_image_description">My Image Description</string>
+    <string name="filter">Filter</string>
+    <string name="filter_by">Filter By</string>
+    <string name="apply">Apply</string>
+    <string name="search_movies">Search Movies</string>
+    <string name="total_repo_count">Total %1$d hits in %2$s</string>
+
+</resources>

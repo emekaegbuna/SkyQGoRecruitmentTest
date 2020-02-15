@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         rvRepos.adapter = movieAdapter
     }
 
-    private fun reloadData(totalItemCount: Int) {
+    /*private fun reloadData() {
         Toast.makeText(
             this@MainActivity,
             "Reloaded new Movies",
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             fetchRepos(etSearch.text.toString(), movieGenre)
         }
-    }
+    }*/
 
     private fun displayProgressbar() {
         progressbar.visibility = View.VISIBLE

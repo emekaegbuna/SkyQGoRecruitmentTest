@@ -9,16 +9,14 @@ import com.example.skyqgorecruitmenttest.data.repository.Repository
 import com.example.skyqgorecruitmenttest.ui.activity.MainActivity
 import io.reactivex.disposables.CompositeDisposable
 import java.net.UnknownHostException
-import java.time.Duration
 import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.timerTask
 
 
 class MainViewModel @Inject constructor(private val repository: Repository): ViewModel() {
 
     private val disposable = CompositeDisposable()
-    var fetchTime: MutableLiveData<Duration> = MutableLiveData()
-
     var lastFetchedTime: Date? = null
 
     val repos: MutableLiveData<List<Data>> = MutableLiveData()
@@ -44,8 +42,6 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
 
     fun fetchGenre(movies: List<Data>){
 
-
-
         val newGenreList: MutableList<String> = mutableListOf()
 
         for (movie in movies){
@@ -57,10 +53,10 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
                 genre.value = newGenreList
             }
         }
+
     }
 
     fun fetchMovieRepos(query: String?, filter: String?){
-
 
         loadingState.value = LoadingState.LOADING
 

@@ -9,16 +9,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.skyqgorecruitmenttest.R
-import com.example.skyqgorecruitmenttest.di.DaggerActivityComponent
-import com.example.skyqgorecruitmenttest.di.NetworkModule
-import com.example.skyqgorecruitmenttest.di.RepositoryModule
 import com.example.skyqgorecruitmenttest.ui.adapter.FilterAdapter
 import com.example.skyqgorecruitmenttest.viewModel.MainViewModel
 import com.example.skyqgorecruitmenttest.viewModel.factory.MainViewModelFactory
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_filter.*
 import javax.inject.Inject
 
-class FilterActivity : AppCompatActivity() {
+class FilterActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var mainViewModelFactory: MainViewModelFactory
@@ -28,12 +26,6 @@ class FilterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_filter)
-
-        DaggerActivityComponent.builder()
-            .networkModule(NetworkModule())
-            .repositoryModule(RepositoryModule())
-            .build()
-            .inject(this)
 
         viewModel = ViewModelProviders.of(this, mainViewModelFactory).get(MainViewModel::class.java)
 

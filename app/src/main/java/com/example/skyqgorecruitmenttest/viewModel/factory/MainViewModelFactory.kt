@@ -2,13 +2,24 @@ package com.example.skyqgorecruitmenttest.viewModel.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.skyqgorecruitmenttest.data.repository.Repository
-import com.example.skyqgorecruitmenttest.viewModel.MainViewModel
+import javax.inject.Inject
+import javax.inject.Provider
+import javax.inject.Singleton
 
-
-@Suppress("UNCHECKED_CAST")
-class MainViewModelFactory constructor(private val repository: Repository): ViewModelProvider.Factory {
+@Singleton
+class MainViewModelFactory @Inject constructor(val creators:Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>): ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return MainViewModel(repository) as T
+
+        val creator = creators[modelClass] ?: creators.entries.firstOrNull{
+            modelClass.isAssignableFrom(it.key)
+        }?.value?: throw IllegalArgumentException("unknown model class" + modelClass)
+
+        try {
+            @Suppress("unchecked")
+            return creator.get() as T
+        }catch (e: Exception){
+            throw RuntimeException(e)
+        }
+
     }
 }

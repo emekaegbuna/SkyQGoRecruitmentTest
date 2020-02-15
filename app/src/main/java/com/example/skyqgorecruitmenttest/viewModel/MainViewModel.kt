@@ -4,8 +4,11 @@ import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.skyqgorecruitmenttest.MovieApplication
 import com.example.skyqgorecruitmenttest.data.model.Data
+import com.example.skyqgorecruitmenttest.data.model.MovieRepo
 import com.example.skyqgorecruitmenttest.data.repository.Repository
+import com.example.skyqgorecruitmenttest.data.repository.RepositoryImpl
 import com.example.skyqgorecruitmenttest.ui.activity.MainActivity
 import io.reactivex.disposables.CompositeDisposable
 import java.net.UnknownHostException
@@ -14,7 +17,7 @@ import javax.inject.Inject
 import kotlin.concurrent.timerTask
 
 
-class MainViewModel @Inject constructor(private val repository: Repository): ViewModel() {
+class MainViewModel @Inject constructor(val repository: RepositoryImpl): ViewModel() {
 
     private val disposable = CompositeDisposable()
     var lastFetchedTime: Date? = null
@@ -56,6 +59,15 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
 
     }
 
+    /*fun cacheMovieRepo(movieRepo: MovieRepo){
+        disposable.add(
+        repository.cacheMovieRepo(movieRepo)
+            .subscribe(
+                {Log.d("DB TAG", "DB updated")},
+                {t: Throwable? -> Log.d("DB TAG", "Error updating DB")  }
+            ))
+    }*/
+
     fun fetchMovieRepos(query: String?, filter: String?){
 
         loadingState.value = LoadingState.LOADING
@@ -71,7 +83,7 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
                     } else {
 
                         fetchGenre(it.data)
-
+                        //cacheMovieRepo(it)
                         var newMovieList: MutableList<Data> = mutableListOf()
 
                         if (query != null && query.isNotEmpty() && filter!!.isNotEmpty()){
@@ -120,11 +132,80 @@ class MainViewModel @Inject constructor(private val repository: Repository): Vie
                         else -> errorMessage.value = it.localizedMessage
                     }
 
-                    loadingState.value = LoadingState.ERROR
+                    //fetchMovieCache(query, filter)
+
+                    //loadingState.value = LoadingState.ERROR
 
                 })
         )
     }
+
+/*    private fun fetchMovieCache(query: String?, filter: String?) {
+        loadingState.value = LoadingState.LOADING
+
+        disposable.add(
+            repository.fetchMovieCache()
+                .subscribe({
+                    if (it.data!!.isEmpty()) {
+                        errorMessage.value = "No Movies Found"
+                        loadingState.value = LoadingState.ERROR
+
+                    } else {
+
+                        fetchGenre(it.data)
+                        cacheMovieRepo(it)
+                        var newMovieList: MutableList<Data> = mutableListOf()
+
+                        if (query != null && query.isNotEmpty() && filter!!.isNotEmpty()){
+                            for (movie in it.data){
+                                if (movie.title.contains(query, true) && movie.genre.equals(filter)){
+                                    newMovieList.add(movie)
+                                }
+                            }
+                            repos.value = newMovieList
+
+                        }else if (query != null && query.isNotEmpty()){
+                            for (movie in it.data){
+                                if (movie.title.contains(query, true)){
+                                    newMovieList.add(movie)
+                                }
+                            }
+
+                            repos.value = newMovieList
+
+                        }else if (filter!!.isNotEmpty()){
+                            for (movie in it.data){
+                                if (movie.genre.equals(filter)){
+                                    newMovieList.add(movie)
+                                }
+                            }
+
+                            repos.value = newMovieList
+
+                        }else{
+                            repos.value = it.data
+                        }
+
+                        //totalCount.value = it.data.size
+                        loadingState.value = LoadingState.SUCCESS
+
+
+                    }
+                }, {
+
+                    it.printStackTrace()
+
+
+                    when (it) {
+                        is UnknownHostException -> errorMessage.value = "No Network"
+                        else -> errorMessage.value = it.localizedMessage
+                    }
+
+                    loadingState.value = LoadingState.ERROR
+
+                })
+        )
+    }*/
 
     /*private fun myFilterFunc(it: Data): Boolean {
 

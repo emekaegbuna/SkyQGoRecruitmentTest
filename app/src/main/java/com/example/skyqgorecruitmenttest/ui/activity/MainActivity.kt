@@ -17,17 +17,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.skyqgorecruitmenttest.MyTextWatcher
 import com.example.skyqgorecruitmenttest.R
 import com.example.skyqgorecruitmenttest.data.model.Data
-import com.example.skyqgorecruitmenttest.di.DaggerActivityComponent
-import com.example.skyqgorecruitmenttest.di.NetworkModule
-import com.example.skyqgorecruitmenttest.di.RepositoryModule
 import com.example.skyqgorecruitmenttest.ui.adapter.MovieAdapter
 import com.example.skyqgorecruitmenttest.utils.toTimeDuration
 import com.example.skyqgorecruitmenttest.viewModel.MainViewModel
 import com.example.skyqgorecruitmenttest.viewModel.factory.MainViewModelFactory
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var mainViewModelFactory: MainViewModelFactory
@@ -45,13 +43,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // dependency injection
-        DaggerActivityComponent.builder()
-            .networkModule(NetworkModule())
-            .repositoryModule(RepositoryModule())
-            .build()
-            .inject(this)
 
         viewModel = ViewModelProviders.of(this, mainViewModelFactory).get(MainViewModel::class.java)
 

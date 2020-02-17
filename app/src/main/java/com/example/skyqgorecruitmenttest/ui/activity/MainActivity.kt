@@ -23,6 +23,7 @@ import com.example.skyqgorecruitmenttest.viewModel.MainViewModel
 import com.example.skyqgorecruitmenttest.viewModel.factory.MainViewModelFactory
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.view_holder_filter.*
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -169,4 +170,5 @@ class MainActivity : DaggerAppCompatActivity() {
         }
 
     }
+
 }

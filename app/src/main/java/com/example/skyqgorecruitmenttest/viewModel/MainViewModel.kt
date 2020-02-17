@@ -134,7 +134,7 @@ class MainViewModel @Inject constructor(val repository: RepositoryImpl): ViewMod
 
                     //fetchMovieCache(query, filter)
 
-                    //loadingState.value = LoadingState.ERROR
+                    loadingState.value = LoadingState.ERROR
 
                 })
         )

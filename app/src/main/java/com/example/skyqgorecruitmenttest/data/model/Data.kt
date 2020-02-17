@@ -1,5 +1,7 @@
 package com.example.skyqgorecruitmenttest.data.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 /*
@@ -13,12 +15,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 For support, please feel free to contact me at https://www.linkedin.com/in/syedabsar */
 
-
+@Entity(tableName = "movie")
 data class Data (
 
-    @SerializedName("id")val id : Int,
-    @SerializedName("title")val title : String,
-    @SerializedName("year")val year : Int,
-    @SerializedName("genre")val genre : String,
-    @SerializedName("poster")val poster : String
+    @PrimaryKey
+    @SerializedName("id")
+    val id : Int,
+
+    @SerializedName("title")
+    val title : String,
+
+    @SerializedName("year")
+    val year : Int,
+
+    @SerializedName("genre")
+    val genre : String,
+
+    @SerializedName("poster")
+    val poster : String
 )

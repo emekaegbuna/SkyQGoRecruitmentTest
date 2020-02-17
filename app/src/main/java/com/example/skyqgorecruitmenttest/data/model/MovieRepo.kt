@@ -16,10 +16,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 For support, please feel free to contact me at https://www.linkedin.com/in/syedabsar */
 
-@Entity
+
 data class MovieRepo (
 
-    @Embedded
-    @SerializedName("data")
-    val data : List<Data>?
+    val data : List<Data>
 )

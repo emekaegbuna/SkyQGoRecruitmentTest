@@ -31,7 +31,7 @@ class MainViewModel @Inject constructor(val repository: RepositoryImpl): ViewMod
             // Write code for your refresh logic
 
             fetchMovieRepos(query, filter)
-        }, 1000*60)
+        }, 1000*60*10)
     }
 
 

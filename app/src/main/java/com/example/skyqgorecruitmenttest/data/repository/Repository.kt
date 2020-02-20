@@ -9,4 +9,5 @@ interface Repository {
     fun fetchMovieRepos(): Single<MovieRepo>
     fun fetchMovieCache(): Single<List<Data>>
     fun cacheMovieRepo(movie: List<Data>):Completable
+    fun clearMovieCache(): Completable
 }

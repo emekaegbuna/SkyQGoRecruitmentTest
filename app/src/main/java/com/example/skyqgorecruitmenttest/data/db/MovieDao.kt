@@ -19,4 +19,7 @@ interface MovieDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun cacheMovieRepo(movie: List<Data>): Completable
+
+    @Query("Delete from movie")
+    fun clearMovieCache(): Completable
 }

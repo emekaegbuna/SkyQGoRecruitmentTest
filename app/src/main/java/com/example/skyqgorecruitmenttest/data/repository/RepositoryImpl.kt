@@ -2,17 +2,20 @@ package com.example.skyqgorecruitmenttest.data.repository
 
 
 import android.app.Application
+import androidx.lifecycle.MutableLiveData
 import com.example.skyqgorecruitmenttest.data.db.MovieDao
 import com.example.skyqgorecruitmenttest.data.model.Data
 import com.example.skyqgorecruitmenttest.data.model.MovieRepo
 import com.example.skyqgorecruitmenttest.data.remote.WebServices
 import io.reactivex.Completable
+import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-open class RepositoryImpl @Inject constructor(val movieDao: MovieDao, val webServices: WebServices, val application: Application) : Repository {
+open class RepositoryImpl @Inject constructor(val movieDao: MovieDao, val webServices: WebServices) : Repository {
 
 
 
@@ -21,6 +24,7 @@ open class RepositoryImpl @Inject constructor(val movieDao: MovieDao, val webSer
         return webServices.fetchMovieWebService()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+
     }
 
     override fun fetchMovieCache(): Single<List<Data>> {
@@ -31,6 +35,12 @@ open class RepositoryImpl @Inject constructor(val movieDao: MovieDao, val webSer
 
     override fun cacheMovieRepo(movie: List<Data>): Completable {
         return movieDao.cacheMovieRepo(movie)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun clearMovieCache(): Completable {
+        return movieDao.clearMovieCache()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

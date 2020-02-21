@@ -11,7 +11,7 @@ import com.example.skyqgorecruitmenttest.data.model.MovieRepo
 import com.example.skyqgorecruitmenttest.utils.Constant
 
 
-@Database(entities = [Data::class], version = 1)
+@Database(entities = [Data::class], version = 1, exportSchema = false)
 abstract class MovieDatabase: RoomDatabase() {
 
     abstract fun movieDao(): MovieDao

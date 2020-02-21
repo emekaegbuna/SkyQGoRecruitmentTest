@@ -28,8 +28,8 @@ class ApplicationModule (){
 
     @Singleton
     @Provides
-    fun provideRepository(webServices: WebServices, userDao: MovieDao, application: Application): RepositoryImpl {
-        return RepositoryImpl(userDao, webServices, application)
+    fun provideRepository(webServices: WebServices, userDao: MovieDao): RepositoryImpl {
+        return RepositoryImpl(userDao, webServices)
     }
 
 

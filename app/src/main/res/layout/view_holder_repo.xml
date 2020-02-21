@@ -31,20 +31,5 @@
         android:layout_gravity="top|end"
         android:hint="Movie Genre" />
 
-    <TextView
-        android:visibility="gone"
-        android:id="@+id/tvDesc"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:padding="4dp"
-        android:textSize="16sp"
-        tools:text="Repo Descriptionflekfhoeihfoefhoefheoifhieohfoiehfoiehfoehfoeifh"
-        android:drawableStart="@drawable/ic_launcher_foreground"
-        />
 
 </androidx.cardview.widget.CardView>

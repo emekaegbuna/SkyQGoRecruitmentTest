@@ -8,6 +8,7 @@ import android.text.Editable
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -40,7 +41,6 @@ class MainActivity : DaggerAppCompatActivity() {
 
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -48,8 +48,13 @@ class MainActivity : DaggerAppCompatActivity() {
         viewModel = ViewModelProviders.of(this, mainViewModelFactory).get(MainViewModel::class.java)
 
 
-        viewModel.repos.observe(this, Observer {
+        viewModel.liveMovies.observe(this, Observer {
             setupRecycleView(it)
+        })
+
+        viewModel.toastMessage.observe(this, Observer {
+
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         })
 
         viewModel.errorMessage.observe(this, Observer {
@@ -93,19 +98,6 @@ class MainActivity : DaggerAppCompatActivity() {
         rvRepos.adapter = movieAdapter
     }
 
-    /*private fun reloadData() {
-        Toast.makeText(
-            this@MainActivity,
-            "Reloaded new Movies",
-            Toast.LENGTH_SHORT
-        ).show()
-
-        if (etSearch.text.toString() == "") {
-            fetchRepos("", movieGenre)
-        } else {
-            fetchRepos(etSearch.text.toString(), movieGenre)
-        }
-    }*/
 
     private fun displayProgressbar() {
         progressbar.visibility = View.VISIBLE
@@ -136,10 +128,13 @@ class MainActivity : DaggerAppCompatActivity() {
              filterRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
                     movieGenre = data?.getStringExtra("selected_genre") ?: ""
+
+                    tvDisplay.text = movieGenre
                     if (etSearch.text.toString() == "") {
                         fetchRepos(movieGenre = movieGenre)
                     } else {
                         fetchRepos(etSearch.text.toString(), movieGenre)
+
                     }
                 }
             }
@@ -158,6 +153,8 @@ class MainActivity : DaggerAppCompatActivity() {
         menuInflater.inflate(R.menu.activity_main, menu)
         return true
     }
+
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

@@ -26,7 +26,7 @@ class MainViewModel @Inject constructor(val repository: RepositoryImpl): ViewMod
 
     val handler = Handler()
 
-    private fun doTheAutoRefresh(query: String, filter: String) {
+    fun doTheAutoRefresh(query: String, filter: String) {
         handler.postDelayed(Runnable {
             // Write code for your refresh logic
 
@@ -38,7 +38,6 @@ class MainViewModel @Inject constructor(val repository: RepositoryImpl): ViewMod
     fun fetchMovieRepos(query: String, filter: String){
 
         loadingState.value = LoadingState.LOADING
-        doTheAutoRefresh(query, filter)
 
         disposable.add(
             repository.fetchMovieRepos()
@@ -64,6 +63,11 @@ class MainViewModel @Inject constructor(val repository: RepositoryImpl): ViewMod
 
 
                     }
+
+                    doTheAutoRefresh(query, filter)
+
+
+
                 }, {
 
                     if (lastFetchedTime != null) {

@@ -11,9 +11,11 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.reactivex.Completable
 import io.reactivex.Single
+import kotlinx.coroutines.delay
 import org.junit.After
 import org.junit.Before
 
+import org.junit.jupiter.api.Assertions.assertTimeout
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -21,9 +23,10 @@ import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import org.junit.runners.BlockJUnit4ClassRunner
 import java.net.UnknownHostException
+import java.time.Duration
 import java.util.*
 
-@RunWith(BlockJUnit4ClassRunner::class)
+//@RunWith(BlockJUnit4ClassRunner::class)
 class MainViewModelTest {
 
     @Rule
@@ -32,6 +35,9 @@ class MainViewModelTest {
 
     @MockK
     lateinit var repository: RepositoryImpl
+
+    @MockK
+    lateinit var date: Date
     private lateinit var mainViewModel: MainViewModel
 
     private var totalCount : Int = 1001
@@ -155,6 +161,33 @@ class MainViewModelTest {
         assertEquals(MainViewModel.LoadingState.ERROR, mainViewModel.loadingState.value)
         assertEquals("ABC", mainViewModel.errorMessage.value)
     }
+
+/*    @Test
+    fun fetchRepos_timeElaspedOver10Minuites_newMovieRepoFetched(){
+
+        var liveMovies = MovieRepo(items)
+
+        val expectedRepos1 = listOf<Data>(Data(912312,"Dunkirk",2017,"History","https://goo.gl/1zUyyq"),
+            Data(11241,"Jumanji: welcome to the jungle",2017,"Action","https://image.tmdb.org/t/p/w370_and_h556_bestv2/bXrZ5iHBEjH7WMidbUDQ0U2xbmr.jpg"),
+            Data(55122,"The Maze Runner",2014,"Action","https://image.tmdb.org/t/p/w370_and_h556_bestv2/coss7RgL0NH6g4fC2s5atvf3dFO.jpg"))
+
+        val expectedRepos2 = listOf<Data>(Data(912312,"Dunkirk",2017,"History","https://goo.gl/1zUyyq"),
+            Data(11241,"Jumanji: welcome to the jungle",2017,"Action","https://image.tmdb.org/t/p/w370_and_h556_bestv2/bXrZ5iHBEjH7WMidbUDQ0U2xbmr.jpg"))
+
+        every {repository.fetchMovieRepos()} returns (Single.just(liveMovies)) andThen (Single.just(MovieRepo(expectedRepos2)))
+        every {repository.fetchMovieCache()} returns (Single.just(listOf()))
+        every {repository.cacheMovieRepo(any())} returns (Completable.complete())
+        every {repository.clearMovieCache()} returns (Completable.complete())
+
+        mainViewModel.fetchMovieRepos("","")
+
+        assertEquals(expectedRepos1, mainViewModel.liveMovies.value)
+
+        mainViewModel.fetchMovieRepos("","")
+        assertEquals(expectedRepos2, mainViewModel.liveMovies.value)
+
+
+    }*/
 
     @Test
     fun getActivityTest(){
